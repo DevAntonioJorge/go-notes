@@ -1,3 +1,5 @@
 Stack:
 Framework: Echo
-Banco: Postgres(Supabase)
+Banco: Postgres(Supabase), MongoDB
+Docker
+Sem orm
