@@ -1,6 +1,6 @@
 module github.com/DevAntonioJorge/go-blog
 
-go 1.24.3
+go 1.24.2
 
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
