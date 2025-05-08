@@ -37,15 +37,16 @@ func (h *UserHandler) RegisterHandler(c echo.Context) error{
 
 func (h *UserHandler) LoginHandler(c echo.Context) error{
 	lr := new(dto.LoginRequest)
+	var user *models.User
+	var err error
+
 	if err := c.Bind(lr); err != nil{
 		return c.String(http.StatusBadRequest, "Invalid request body")
 	} 
-	user := new(models.User)
-	var err error
 	if strings.Contains(lr.Identifier, "@"){
-		err = h.service.Login(user , lr.Identifier, "email")
+		user, err = h.service.Login(lr.Identifier, "email", lr.Password)
 	} else {
-		err = h.service.Login(user , lr.Identifier, "name")
+		user, err = h.service.Login(lr.Identifier, "name", lr.Password)
 	}
 	if err != nil{
 		return c.String(http.StatusUnauthorized, "Invalid credentials")
