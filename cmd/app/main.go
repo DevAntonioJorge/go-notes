@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -19,11 +18,8 @@ func main(){
 	} 
 	e := echo.New()
 	cfg := GetConfig()
-
-	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, echo.Map{"message": "OK"})
-	})
-
+    
+	MapRoutes(e)
 	e.Logger.Fatal(Run(cfg.Port, e))
 }
 
