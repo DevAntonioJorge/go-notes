@@ -4,18 +4,19 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func MapRoutes(e *echo.Echo, secret string) {
+func MapRoutes(e *echo.Echo, secret string, port string) {
 
 	api := e.Group("/api")
 	api.Use(
 		middleware.CORSWithConfig(middleware.CORSConfig{
 			Skipper: middleware.DefaultSkipper,
-			AllowOrigins: []string{"http://localhost:8000"},
+			AllowOrigins: []string{"http://localhost" + port},
 			AllowMethods: []string{http.MethodGet, http.MethodPatch, http.MethodDelete, http.MethodPost},
 			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 			AllowCredentials: true,
@@ -33,8 +34,11 @@ func MapRoutes(e *echo.Echo, secret string) {
 		middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(30)),
 		middleware.RequestID(),
 		middleware.Recover(),
+		
 	)
-
+	metrics := api.Group("/metrics")
+	metrics.Use(echoprometheus.NewMiddleware("api"),)
+	metrics.GET("/", echoprometheus.NewHandler())
 	api.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})

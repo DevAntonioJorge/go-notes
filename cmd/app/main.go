@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,11 +17,9 @@ func main(){
 		log.Fatalf("Error loading env: %v", err)
 	} 
 	e := echo.New()
-	e.Use(echoprometheus.NewMiddleware("go-blog")) 
-	e.GET("/metrics", echoprometheus.NewHandler())
 	cfg := GetConfig()
     
-	MapRoutes(e, cfg.JWTSecret)
+	MapRoutes(e, cfg.JWTSecret, cfg.Port)
 	e.Logger.Fatal(Run(cfg.Port, e))
 }
 
