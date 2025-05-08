@@ -1,7 +1,9 @@
 package interfaces
 
-import "github.com/DevAntonioJorge/go-blog/internal/dto"
+import (
+	"github.com/DevAntonioJorge/go-blog/internal/models"
+)
 
 type IUserService interface{
-	SaveUser(inpur dto.CreateUserRequest) error
+	SaveUser(user *models.User) error
 }
