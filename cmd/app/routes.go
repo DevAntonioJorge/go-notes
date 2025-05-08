@@ -3,9 +3,10 @@ package main
 import (
 	"net/http"
 
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/echo-jwt/v4"
 )
 
 func MapRoutes(e *echo.Echo, secret string) {
@@ -40,7 +41,40 @@ func MapRoutes(e *echo.Echo, secret string) {
 
 	users := api.Group("/users")
 	//public := users.Group("/")
+	//public.POST("/register",)
+	//public.POST("/login")
+	//public.GET("/ping")
 	protected := users.Group("/")
+
+	protected.Use(echojwt.WithConfig(echojwt.Config{
+		Skipper: middleware.DefaultSkipper,
+		SigningKey: []byte(secret),
+		SigningMethod: "HS256",
+		ContextKey: "user_id",
+		ParseTokenFunc: func(c echo.Context, auth string) (interface{}, error) {
+			token, err := jwt.Parse(auth, func(t *jwt.Token) (interface{}, error) {
+				if t.Method.Alg() != "HS256"{
+					return nil, echo.NewHTTPError(http.StatusUnauthorized, "Sign method invalid")
+				}
+				return []byte(secret), nil
+			})
+			if err != nil {
+				return nil, err
+			}
+			if !token.Valid {
+				return nil, echo.NewHTTPError(http.StatusUnauthorized, "Invalid Token")
+			}
+			return token, nil
+		},
+		ErrorHandler: func(c echo.Context, err error) error {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or absent token")
+		},
+		/*	
+			Exemplo de uso
+			user := c.Get("user_id").(*jwt.Token)
+			claims := user.Claims.(jwt.MapClaims)
+		*/
+	}))
 	
-	protected.Use(echojwt.JWT([]byte(secret)))
+
 }
