@@ -3,12 +3,11 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 	"github.com/jackc/pgx/v5"
 )
 
-func ConnectDB() *pgx.Conn {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+func ConnectDB(url string) *pgx.Conn {
+	conn, err := pgx.Connect(context.Background(), url)
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
