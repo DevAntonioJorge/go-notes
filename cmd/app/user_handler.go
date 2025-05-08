@@ -21,22 +21,18 @@ func NewUserHandler(service interfaces.IUserService, secret string) *UserHandler
 }
 
 func (h *UserHandler) RegisterHandler(c echo.Context) error{
-	u := new(dto.CreateUserRequest)
+	var u dto.CreateUserRequest
 	if err := c.Bind(u); err != nil {
 		return c.String(http.StatusBadRequest, "Invalid request body")
 	}
-	user, err := models.NewUser(u.Name, u.Email, u.Password)
-	if err != nil{
-		return c.String(http.StatusBadRequest, "Invalid name, email or password")
-	}
-	if err := h.service.SaveUser(user); err != nil{
+	if err := h.service.SaveUser(u); err != nil{
 		return c.String(http.StatusBadRequest, "Failed to create user")
 	}
-	return c.JSON(http.StatusCreated, echo.Map{"message": "User successfully registered", "user": user})
+	return c.JSON(http.StatusCreated, echo.Map{"message": "User successfully registered"})
 }
 
 func (h *UserHandler) LoginHandler(c echo.Context) error{
-	lr := new(dto.LoginRequest)
+	var lr dto.LoginRequest
 	var user *models.User
 	var err error
 
@@ -44,9 +40,9 @@ func (h *UserHandler) LoginHandler(c echo.Context) error{
 		return c.String(http.StatusBadRequest, "Invalid request body")
 	} 
 	if strings.Contains(lr.Identifier, "@"){
-		user, err = h.service.Login(lr.Identifier, "email", lr.Password)
+		user, err = h.service.Login(lr, "email")
 	} else {
-		user, err = h.service.Login(lr.Identifier, "name", lr.Password)
+		user, err = h.service.Login(lr, "name")
 	}
 	if err != nil{
 		return c.String(http.StatusUnauthorized, "Invalid credentials")
@@ -58,5 +54,6 @@ func (h *UserHandler) LoginHandler(c echo.Context) error{
 	return c.JSON(http.StatusAccepted, echo.Map{
 		"message": "User login successful",
 		"token": token,
+		"user": user,
 	})
 }
