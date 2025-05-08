@@ -19,7 +19,7 @@ func main(){
 	e := echo.New()
 	cfg := GetConfig()
     
-	MapRoutes(e)
+	MapRoutes(e, cfg.JWTSecret)
 	e.Logger.Fatal(Run(cfg.Port, e))
 }
 

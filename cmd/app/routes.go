@@ -5,13 +5,20 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo-jwt/v4"
 )
 
-func MapRoutes(e *echo.Echo) {
+func MapRoutes(e *echo.Echo, secret string) {
 
 	api := e.Group("/api")
 	api.Use(
-		middleware.CORS(),
+		middleware.CORSWithConfig(middleware.CORSConfig{
+			Skipper: middleware.DefaultSkipper,
+			AllowOrigins: []string{"http://localhost:8000"},
+			AllowMethods: []string{http.MethodGet, http.MethodPatch, http.MethodDelete, http.MethodPost},
+			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+			AllowCredentials: true,
+		}),
 		middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 			LogLatency: true,
 			LogStatus:  true,
@@ -30,4 +37,10 @@ func MapRoutes(e *echo.Echo) {
 	api.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
+
+	users := api.Group("/users")
+	//public := users.Group("/")
+	protected := users.Group("/")
+	
+	protected.Use(echojwt.JWT([]byte(secret)))
 }
