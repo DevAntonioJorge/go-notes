@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,10 +18,11 @@ func main(){
 		log.Fatalf("Error loading env: %v", err)
 	} 
 	e := echo.New()
+	e.Use(echoprometheus.NewMiddleware("go-blog")) 
+	e.GET("/metrics", echoprometheus.NewHandler())
 	cfg := GetConfig()
     
 	MapRoutes(e, cfg.JWTSecret)
-	go AddMetrics(cfg.MetricsPort)
 	e.Logger.Fatal(Run(cfg.Port, e))
 }
 
@@ -52,12 +51,4 @@ func Run(port string, e *echo.Echo) error{
 		return err
 	}
 	return nil
-}
-
-func AddMetrics(port string) {
-	metrics := echo.New()
-	metrics.GET("/", echoprometheus.NewHandler())
-	if err := metrics.Start(port); err != nil && !errors.Is(err, http.ErrServerClosed){
-		log.Fatal(err)
-	}
 }
