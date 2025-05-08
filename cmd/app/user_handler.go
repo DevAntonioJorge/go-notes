@@ -2,19 +2,22 @@ package main
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/DevAntonioJorge/go-blog/internal/dto"
 	"github.com/DevAntonioJorge/go-blog/internal/interfaces"
 	"github.com/DevAntonioJorge/go-blog/internal/models"
+	"github.com/DevAntonioJorge/go-blog/internal/utils/token"
 	"github.com/labstack/echo/v4"
 )
 
 type UserHandler struct{
 	service interfaces.IUserService
+	secret string
 }
 
-func NewUserHandler(service interfaces.IUserService) *UserHandler{
-	return &UserHandler{service}
+func NewUserHandler(service interfaces.IUserService, secret string) *UserHandler{
+	return &UserHandler{service, secret}
 }
 
 func (h *UserHandler) RegisterHandler(c echo.Context) error{
@@ -33,6 +36,26 @@ func (h *UserHandler) RegisterHandler(c echo.Context) error{
 }
 
 func (h *UserHandler) LoginHandler(c echo.Context) error{
-	
-	return c.JSON(http.StatusAccepted, "User login successful")
+	lr := new(dto.LoginRequest)
+	if err := c.Bind(lr); err != nil{
+		return c.String(http.StatusBadRequest, "Invalid request body")
+	} 
+	user := new(models.User)
+	var err error
+	if strings.Contains(lr.Identifier, "@"){
+		err = h.service.Login(user , lr.Identifier, "email")
+	} else {
+		err = h.service.Login(user , lr.Identifier, "name")
+	}
+	if err != nil{
+		return c.String(http.StatusUnauthorized, "Invalid credentials")
+	}
+	token , err := token.GenerateToken(user.ID, h.secret)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error generating token")
+	}
+	return c.JSON(http.StatusAccepted, echo.Map{
+		"message": "User login successful",
+		"token": token,
+	})
 }
