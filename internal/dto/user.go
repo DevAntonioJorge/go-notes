@@ -11,3 +11,6 @@ type LoginRequest struct{
 	Password string `json:"password"`
 }
 
+type UpdatePasswordRequest struct{
+	Password string `json:"password"`
+}

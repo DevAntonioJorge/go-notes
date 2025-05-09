@@ -51,9 +51,7 @@ func (h *UserHandler) LoginHandler(c echo.Context) error{
 }
 
 func (h *UserHandler) UpdatePasswordHandler(c echo.Context) error{
-	var req struct {
-		Password string `json:"password"`
-	}
+	var req dto.UpdatePasswordRequest
 	if err := c.Bind(&req); err != nil{
 		return c.String(http.StatusBadGateway, "Invalid request body")
 	}
