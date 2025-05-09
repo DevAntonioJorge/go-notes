@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/DevAntonioJorge/go-blog/internal/dto"
 	"github.com/DevAntonioJorge/go-blog/internal/interfaces"
@@ -34,11 +35,11 @@ func (s *UserService) SaveUser(u *dto.CreateUserRequest) error {
 	}
 	return nil
 }
-func (s *UserService) Login(input dto.LoginRequest, valueType string) (*models.User, error){
+func (s *UserService) Login(input dto.LoginRequest) (*models.User, error){
 	var user *models.User
 	var err error
 
-	if valueType == "email" {
+	if strings.Contains(input.Identifier, "@")  {
 		user, err = s.repo.GetUserByEmail(input.Identifier)
 	} else {
 		user, err = s.repo.GetUserByName(input.Identifier)

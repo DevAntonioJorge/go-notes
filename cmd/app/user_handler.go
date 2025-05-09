@@ -2,11 +2,9 @@ package main
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/DevAntonioJorge/go-blog/internal/dto"
 	"github.com/DevAntonioJorge/go-blog/internal/interfaces"
-	"github.com/DevAntonioJorge/go-blog/internal/models"
 	"github.com/DevAntonioJorge/go-blog/internal/utils/token"
 	"github.com/labstack/echo/v4"
 )
@@ -33,17 +31,10 @@ func (h *UserHandler) RegisterHandler(c echo.Context) error{
 
 func (h *UserHandler) LoginHandler(c echo.Context) error{
 	var lr dto.LoginRequest
-	var user *models.User
-	var err error
-
 	if err := c.Bind(lr); err != nil{
 		return c.String(http.StatusBadRequest, "Invalid request body")
-	} 
-	if strings.Contains(lr.Identifier, "@"){
-		user, err = h.service.Login(lr, "email")
-	} else {
-		user, err = h.service.Login(lr, "name")
 	}
+	user, err := h.service.Login(lr)
 	if err != nil{
 		return c.String(http.StatusUnauthorized, "Invalid credentials")
 	}
