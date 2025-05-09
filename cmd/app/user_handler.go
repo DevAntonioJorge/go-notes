@@ -6,6 +6,7 @@ import (
 	"github.com/DevAntonioJorge/go-blog/internal/dto"
 	"github.com/DevAntonioJorge/go-blog/internal/interfaces"
 	"github.com/DevAntonioJorge/go-blog/internal/utils/token"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -47,4 +48,22 @@ func (h *UserHandler) LoginHandler(c echo.Context) error{
 		"token": token,
 		"user": user,
 	})
+}
+
+func (h *UserHandler) UpdatePasswordHandler(c echo.Context) error{
+	var req struct {
+		Password string `json:"password"`
+	}
+	if err := c.Bind(&req); err != nil{
+		return c.String(http.StatusBadGateway, "Invalid request body")
+	}
+
+	user := c.Get("user_id").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userId := claims["sub"].(string)
+	if err := h.service.UpdatePassword(userId, req.Password); err != nil{
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update password")
+	}
+
+	return c.JSON(http.StatusAccepted, echo.Map{"message":"Password successfully updated"})
 }

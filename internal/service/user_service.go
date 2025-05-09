@@ -13,10 +13,10 @@ type UserService struct{
 	repo interfaces.IUserRepository
 }
 
-func NewUserService(repository interfaces.IUserRepository) *UserService{
+func NewUserService(repository interfaces.IUserRepository) interfaces.IUserService{
 	return &UserService{repository}
 }
-func (s *UserService) SaveUser(u *dto.CreateUserRequest) error {
+func (s *UserService) SaveUser(u dto.CreateUserRequest) error {
 	_, err := s.repo.GetUserByEmail(u.Email)
 	if err == nil{
 		return errors.New("user with this email exists")
@@ -46,7 +46,7 @@ func (s *UserService) Login(input dto.LoginRequest) (*models.User, error){
 	}
 
 	if user == nil || err != nil{
-		return nil, errors.New("user not found")
+		return nil, models.ErrUserNotFound
 	}
 	
 	if err = user.CheckPassword(input.Password); err != nil{
@@ -54,4 +54,17 @@ func (s *UserService) Login(input dto.LoginRequest) (*models.User, error){
 	}
 
 	return user, nil
+}
+
+func(s *UserService) UpdatePassword(id, password string) error{
+
+	user, err := s.repo.GetUserByID(id)
+	if err != nil{
+		return models.ErrUserNotFound
+	}
+	if err := s.repo.UpdatePassword(user, password); err != nil{
+		return models.ErrUpdatePassword
+	}
+
+	return nil
 }
