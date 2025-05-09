@@ -8,5 +8,5 @@ import (
 type IUserService interface{
 	SaveUser(input dto.CreateUserRequest) error
 	Login(input dto.LoginRequest) (*models.User, error)
-	UpdatePassword(password string) error
+	UpdatePassword(id , password string) error
 }

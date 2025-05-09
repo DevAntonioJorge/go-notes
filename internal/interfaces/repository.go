@@ -7,5 +7,5 @@ type IUserRepository interface {
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByID(id string) (*models.User, error)
 	GetUserByName(name string) (*models.User, error)
-	UpdatePassword(email, password string) error
+	UpdatePassword(user *models.User, password string) error
 }
