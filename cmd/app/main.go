@@ -8,6 +8,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/DevAntonioJorge/go-blog/internal/repository"
+	"github.com/DevAntonioJorge/go-blog/internal/service"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
@@ -17,9 +19,15 @@ func main(){
 		log.Fatalf("Error loading env: %v", err)
 	} 
 	e := echo.New()
+
 	cfg := GetConfig()
-    
-	MapRoutes(e, cfg.JWTSecret, cfg.Port)
+    db := ConnectDB(cfg.DBUrl)
+	
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	userHandler := NewUserHandler(userService, cfg.JWTSecret)
+
+	MapRoutes(e, cfg.JWTSecret, cfg.Port, userHandler)
 	e.Logger.Fatal(Run(cfg.Port, e))
 }
 
