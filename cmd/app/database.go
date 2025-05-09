@@ -11,6 +11,6 @@ func ConnectDB(url string) *pgx.Conn {
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
-	defer conn.Close(context.Background())
+	
 	return conn
 }
