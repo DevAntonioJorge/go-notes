@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func MapRoutes(e *echo.Echo, secret string, port string) {
+func MapRoutes(e *echo.Echo, secret string, port string, userHandler *UserHandler) {
 
 	api := e.Group("/api")
 	api.Use(
@@ -44,11 +44,17 @@ func MapRoutes(e *echo.Echo, secret string, port string) {
 	})
 
 	users := api.Group("/users")
-	//public := users.Group("/")
-	//public.POST("/register",)
-	//public.POST("/login")
-	//public.GET("/ping")
+
+	public := users.Group("/")
+	{
+		public.POST("/register", userHandler.RegisterHandler)
+		public.POST("/login", userHandler.LoginHandler)
+	}
+	
 	protected := users.Group("/")
+	{
+		protected.PATCH("/update-password", userHandler.UpdatePasswordHandler)
+	}
 
 	protected.Use(echojwt.WithConfig(echojwt.Config{
 		Skipper: middleware.DefaultSkipper,
