@@ -45,13 +45,13 @@ func MapRoutes(e *echo.Echo, secret string, port string, userHandler *UserHandle
 
 	users := api.Group("/users")
 
-	public := users.Group("/")
+	public := users.Group("/public")
 	{
 		public.POST("/register", userHandler.RegisterHandler)
 		public.POST("/login", userHandler.LoginHandler)
 	}
 	
-	protected := users.Group("/")
+	protected := users.Group("/protected")
 	{
 		protected.PATCH("/update-password", userHandler.UpdatePasswordHandler)
 	}
