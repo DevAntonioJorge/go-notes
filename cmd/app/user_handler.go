@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/DevAntonioJorge/go-blog/internal/dto"
-	"github.com/DevAntonioJorge/go-blog/internal/interfaces"
-	"github.com/DevAntonioJorge/go-blog/internal/utils/token"
+	"github.com/DevAntonioJorge/go-notes/internal/dto"
+	"github.com/DevAntonioJorge/go-notes/internal/interfaces"
+	"github.com/DevAntonioJorge/go-notes/internal/utils/token"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )

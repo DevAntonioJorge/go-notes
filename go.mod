@@ -1,4 +1,4 @@
-module github.com/DevAntonioJorge/go-blog
+module github.com/DevAntonioJorge/go-notes
 
 go 1.24.2
 

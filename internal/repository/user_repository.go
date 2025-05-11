@@ -3,8 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/DevAntonioJorge/go-blog/internal/interfaces"
-	"github.com/DevAntonioJorge/go-blog/internal/models"
+	"github.com/DevAntonioJorge/go-notes/internal/models"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -12,7 +11,7 @@ type UserRepository struct{
 	db *pgx.Conn
 }
 
-func NewUserRepository(db *pgx.Conn) interfaces.IUserRepository {
+func NewUserRepository(db *pgx.Conn) *UserRepository {
 	return &UserRepository{db}
 }
 

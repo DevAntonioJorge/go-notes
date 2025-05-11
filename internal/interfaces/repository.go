@@ -1,6 +1,6 @@
 package interfaces
 
-import "github.com/DevAntonioJorge/go-blog/internal/models"
+import "github.com/DevAntonioJorge/go-notes/internal/models"
 
 type IUserRepository interface {
 	SaveUser(user *models.User) error

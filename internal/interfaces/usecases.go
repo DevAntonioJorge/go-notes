@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"github.com/DevAntonioJorge/go-blog/internal/dto"
-	"github.com/DevAntonioJorge/go-blog/internal/models"
+	"github.com/DevAntonioJorge/go-notes/internal/dto"
+	"github.com/DevAntonioJorge/go-notes/internal/models"
 )
 
 type IUserService interface{

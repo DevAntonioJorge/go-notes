@@ -4,9 +4,9 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/DevAntonioJorge/go-blog/internal/dto"
-	"github.com/DevAntonioJorge/go-blog/internal/interfaces"
-	"github.com/DevAntonioJorge/go-blog/internal/models"
+	"github.com/DevAntonioJorge/go-notes/internal/dto"
+	"github.com/DevAntonioJorge/go-notes/internal/interfaces"
+	"github.com/DevAntonioJorge/go-notes/internal/models"
 )
 
 type UserService struct{

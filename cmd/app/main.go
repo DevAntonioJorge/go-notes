@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/DevAntonioJorge/go-blog/internal/repository"
-	"github.com/DevAntonioJorge/go-blog/internal/service"
+	"github.com/DevAntonioJorge/go-notes/internal/repository"
+	"github.com/DevAntonioJorge/go-notes/internal/service"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
@@ -23,6 +23,12 @@ func main(){
 	cfg := GetConfig()
     	db := ConnectDB(cfg.DBUrl)
 	//mgDB := ConnectMongoDB(cfg.MongoDBUrl)
+	/*defer func() {
+		if err := mgDB.Disconnect(); err != nil{
+			log.Fatalf("Error disconnecting to Mongo client")
+		}
+	}
+	*/
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := NewUserHandler(userService, cfg.JWTSecret)
