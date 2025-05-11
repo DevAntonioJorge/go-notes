@@ -21,8 +21,8 @@ func main(){
 	e := echo.New()
 
 	cfg := GetConfig()
-    db := ConnectDB(cfg.DBUrl)
-	
+    	db := ConnectDB(cfg.DBUrl)
+	//mgDB := ConnectMongoDB(cfg.MongoDBUrl)
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := NewUserHandler(userService, cfg.JWTSecret)
