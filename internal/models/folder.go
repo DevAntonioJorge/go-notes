@@ -7,10 +7,10 @@ import (
 )
 
 type Folder struct {
-	ID string
-	Name string
-	ParentID *string 
-	CreatedAt string
+	ID string `json:"id"`
+	Name string `json:"name"`
+	ParentID *string `json:"parent_id"`
+	CreatedAt string `json:"created_at"`
 }
 
 func NewFolder(name string, parentID *string) *Folder {
