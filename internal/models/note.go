@@ -8,15 +8,15 @@ import (
 
 type Note struct{
 	//Metadados
-	ID string
-	UserID string
-	FolderID string
-	Tags []string
+	ID string `json:"id"`
+	UserID string `json:"user_id"`
+	FolderID string `json:"folder_id"`
+	Tags []string `json:"tags"`
 	//Dados
-	Title string
-	Content string
-	CreatedAt string
-	UpdatedAt time.Time
+	Title string `json:"title"`
+	Content string `json:"content"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func NewNote(userID, folderID, title, content string, tags []string) *Note{
