@@ -10,38 +10,34 @@ import (
 
 type User struct{
 	ID string `json:"id"`
-	Name string `json:"name"`
-	Email string `json:"email"`
-	Password []byte `json:"-"`
+	Name string `json:"name" validate:"required,min=5,max=20"`
+	Email string `json:"email" validate:"required,unique,email"`
+	Password []byte `json:"-" validate:"required,min=8,max=72"`
 	CreatedAt string `json:"created_at"`
 }
 
 func NewUser(name, email, password string) (*User, error) {
+	var user *User
 	validate := validator.New()
-	if name == ""{
-		return nil, ErrInvalidName
-	}
-	if err := validate.Var(email, "required,email"); err != nil{
-		return nil, ErrInvalidEmail
-	}
-	if password == "" || len(password) < 8 || len(password) > 72{
-		return nil, ErrInvalidPassword
-	}
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil{
-		return nil, err
+		return nil, ErrInvalidPassword
 	}
-	return &User{
+	user = &User{
 		ID: uuid.NewString(),
 		Name: name,
 		Email: email,
 		Password: hashed,
 		CreatedAt: time.Now().Format(time.DateTime),
-	},nil
+	}
+	if err = validate.Struct(user); err != nil{
+		return nil, ErrInvalidFields
+	}
+	return user, nil
 }
 
 func (u *User) CheckPassword(password string) error{
-	if err:= bcrypt.CompareHashAndPassword(u.Password, []byte(password)); err != nil{
+	if err := bcrypt.CompareHashAndPassword(u.Password, []byte(password)); err != nil{
 		return err
 	}
 	return nil
