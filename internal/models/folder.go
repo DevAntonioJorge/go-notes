@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,14 +14,14 @@ type Folder struct {
 	CreatedAt string `json:"created_at"`
 }
 
-func NewFolder(name string, parentID *string) *Folder {
+func NewFolder(name string, parentID *string) (*Folder, error) {
 	if name == ""{
-		return nil
+		return nil, errors.New("name is required")
 	}
 	return &Folder{
 		ID: uuid.NewString(),
 		Name: name,
 		ParentID: parentID,
 		CreatedAt: time.Now().Format(time.DateTime),
-	}
+	}, nil
 }
