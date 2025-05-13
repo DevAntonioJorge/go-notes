@@ -9,6 +9,7 @@ import (
 	"github.com/DevAntonioJorge/go-notes/internal/utils/token"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"github.com/go-playground/validator/v10"
 )
 
 type UserHandler struct {
@@ -22,10 +23,17 @@ func NewUserHandler(service interfaces.IUserService, secret string) *UserHandler
 
 func (h *UserHandler) RegisterHandler(c echo.Context) error {
 	var u dto.CreateUserRequest
+	
 	if err := c.Bind(&u); err != nil {
 		log.Printf("Error binding json: %v", err)
 		return c.String(http.StatusBadRequest, "Invalid request body")
 	}
+	validate := validator.New()
+	if err:= validate.Struct(u); err != nil{
+		log.Printf("Error validating the user: %v", err)
+		return c.String(http.StatusInternalServerError, "Error invalid fields")
+	}
+	
 	if err := h.service.SaveUser(u); err != nil {
 		log.Printf("Error saving user: %v", err)
 		return c.String(http.StatusBadRequest, "Failed to create user")
