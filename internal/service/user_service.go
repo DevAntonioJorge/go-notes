@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/DevAntonioJorge/go-notes/internal/dto"
@@ -19,17 +18,9 @@ func NewUserService(repository interfaces.IUserRepository) interfaces.IUserServi
 func (s *UserService) SaveUser(u dto.CreateUserRequest) error {
 	_, err := s.repo.GetUserByEmail(u.Email)
 	if err == nil{
-		return errors.New("user with this email exists")
+		return models.ErrEmailExists
 	}
-	_, err = s.repo.GetUserByName(u.Name)
-	if err == nil{
-		return errors.New("user with this username already exists")
-	}
-	user, err := models.NewUser(u.Name, u.Email, u.Password)
-	if err != nil{
-		return errors.New("error saving user")
-	}
-
+	user := models.NewUser(u.Name, u.Email, u.Password)
 	if err = s.repo.SaveUser(user); err != nil{
 		return err
 	}

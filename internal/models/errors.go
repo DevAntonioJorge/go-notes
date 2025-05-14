@@ -10,4 +10,6 @@ var (
 	ErrInvalidFields = errors.New("invalid fields")
 	ErrUserNotFound = errors.New("user not found")
 	ErrUpdatePassword = errors.New("failed to update password")
+	ErrEmailExists = errors.New("user with this email already exists")
+	
 )
