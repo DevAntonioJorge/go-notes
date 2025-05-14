@@ -27,7 +27,7 @@ type INoteService interface{
 type IFolderService interface {
 	SaveFolder(input dto.CreateFolderRequest) (*models.Folder, error)
 	GetFolder(id string) (*models.Folder, error)
-    UpdateFolder(id string, input *dto.UpdateFolderRequest) (*models.Folder, error)
+    UpdateFolder(input dto.UpdateFolderRequest) (*models.Folder, error)
     DeleteFolder(id string) error
     GetFolders(userID string) ([]*models.Folder, error)
     GetFolderByPath(userID string, path string) (*models.Folder, error)

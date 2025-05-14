@@ -5,6 +5,7 @@ type CreateFolderRequest struct{
 	ParentID *string `json:"parent_id"`
 }
 type UpdateFolderRequest struct{
+	ID string `param:"id"`
 	Name string `json:"name" validate:"min=4,max=10"`
 }
 
