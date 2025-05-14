@@ -55,3 +55,21 @@ func (h *FolderHandler) GetFolderHandler(c echo.Context) error{
 		"folder": folder,
 	})
 }
+
+func (h *FolderHandler) UpdateFolder(c echo.Context) error{
+	var req dto.UpdateFolderRequest
+
+	if err := c.Bind(&req); err != nil{
+		return c.String(http.StatusBadRequest, "Ïnvalid request body or invalid id")
+	}
+
+	folder, err := h.service.UpdateFolder(req)
+	if err != nil{
+		return c.String(http.StatusInternalServerError, "Failed to update folder name")
+	}
+
+	return c.JSON(http.StatusAccepted, echo.Map{
+		"folder_id": req.ID,
+		"folder": folder,
+	})
+}
