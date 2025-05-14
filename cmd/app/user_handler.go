@@ -14,11 +14,10 @@ import (
 
 type UserHandler struct {
 	service interfaces.IUserService
-	secret  string
 }
 
-func NewUserHandler(service interfaces.IUserService, secret string) *UserHandler {
-	return &UserHandler{service, secret}
+func NewUserHandler(service interfaces.IUserService) *UserHandler {
+	return &UserHandler{service}
 }
 
 func (h *UserHandler) RegisterHandler(c echo.Context) error {
@@ -52,7 +51,7 @@ func (h *UserHandler) LoginHandler(c echo.Context) error {
 		log.Printf("Error processing login: %v", err)
 		return c.String(http.StatusUnauthorized, "Invalid credentials")
 	}
-	token, err := token.GenerateToken(user.ID, h.secret)
+	token, err := token.GenerateToken(user.ID, GetConfig().JWTSecret)
 	if err != nil {
 		log.Printf("Error generating token: %v", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "Error generating token")

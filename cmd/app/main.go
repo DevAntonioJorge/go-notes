@@ -31,7 +31,7 @@ func main(){
 	*/
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
-	userHandler := NewUserHandler(userService, cfg.JWTSecret)
+	userHandler := NewUserHandler(userService)
 
 	MapRoutes(e, cfg.JWTSecret, cfg.Port, userHandler)
 	e.Logger.Fatal(Run(cfg.Port, e))
