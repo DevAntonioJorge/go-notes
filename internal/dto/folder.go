@@ -28,5 +28,5 @@ type GetFolderByPathRequest struct {
 
 type MoveFolderRequest struct {
 	FolderID string `json:"id"`
-	ParentID string `json:"id"`
+	ParentID string `json:"parent_id"`
 }
