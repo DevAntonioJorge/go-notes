@@ -5,29 +5,31 @@ import (
 	"log"
 	"os"
 
-	"github.com/DevAntonioJorge/go-notes/internal/config"
 	"github.com/DevAntonioJorge/go-notes/internal/domain/repository"
 	"github.com/DevAntonioJorge/go-notes/internal/domain/service"
 	"github.com/DevAntonioJorge/go-notes/internal/infra/api"
+	"github.com/DevAntonioJorge/go-notes/internal/infra/config"
 	"github.com/DevAntonioJorge/go-notes/internal/infra/handlers"
 	"github.com/DevAntonioJorge/go-notes/pkg/logger"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	logger := logger.New(os.Stdout, "", log.LstdFlags, logger.LevelInfo)
+	cfg := config.GetConfig()
+	logger := logger.New(os.Stdout, "", log.LstdFlags, cfg.LogLevel)
 	if err := godotenv.Load(); err != nil {
 		logger.Error("Error loading env: %v", err)
 	}
-	cfg := config.GetConfig()
+	logger.Info("Env loaded")
 	db := config.ConnectDB(cfg.DBUrl)
+	logger.Info("DB connected")
 	mgDB := config.ConnectMongoDB(cfg.MongoDBUrl)
 	defer func() {
 		if err := mgDB.Disconnect(context.Background()); err != nil {
 			logger.Error("Error disconnecting to Mongo client")
 		}
 	}()
-
+	logger.Info("MongoDB connected")
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := handlers.NewUserHandler(userService)
