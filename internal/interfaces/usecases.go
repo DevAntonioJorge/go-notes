@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"context"
+
 	"github.com/DevAntonioJorge/go-notes/internal/dto"
 	"github.com/DevAntonioJorge/go-notes/internal/models"
 )
@@ -12,25 +14,24 @@ type IUserService interface {
 }
 
 type INoteService interface {
-	SaveNote(input dto.CreateNoteRequest) (*models.Note, error)
-	GetNote(id string) (*models.Note, error)
-	UpdateNote(id string, input dto.UpdateNoteRequest) error
-	DeleteNote(id string) error
-	GetNotes(userID string) ([]*models.Note, error)
-	SearchNotes(userID string, query string) ([]*models.Note, error)
-	GetNotesByFolder(folderID string) ([]*models.Note, error)
-	MoveNote(noteID string, newFolderID string) error
-	GetNotesByTag(userID string, tag string) ([]*models.Note, error)
-	GetRecentNotes(userID string, limit int) ([]*models.Note, error)
+	SaveNote(ctx context.Context, input dto.CreateNoteRequest) (*models.Note, error)
+	GetNote(ctx context.Context, id string) (*models.Note, error)
+	UpdateNote(ctx context.Context, id string, input dto.UpdateNoteRequest) error
+	DeleteNote(ctx context.Context, id string) error
+	GetNotes(ctx context.Context, userID string) ([]*models.Note, error)
+	SearchNotes(ctx context.Context, userID string, query string) ([]*models.Note, error)
+	GetNotesByFolder(ctx context.Context, folderID string) ([]*models.Note, error)
+	MoveNote(ctx context.Context, noteID string, newFolderID string) error
+	GetNotesByTag(ctx context.Context, userID string, tag string) ([]*models.Note, error)
+	GetRecentNotes(ctx context.Context, userID string, limit int) ([]*models.Note, error)
 }
 
 type IFolderService interface {
-	SaveFolder(input dto.CreateFolderRequest) (*models.Folder, error)
-	GetFolder(id string) (*models.Folder, error)
-	UpdateFolder(input dto.UpdateFolderRequest) (*models.Folder, error)
-	DeleteFolder(id string) error
-	GetFolders(userID string) ([]*models.Folder, error)
-	GetFolderByPath(userID string, path string) (*models.Folder, error)
-	MoveFolder(folderID string, newParentID string) (*models.Folder, error)
+	SaveFolder(ctx context.Context, input dto.CreateFolderRequest) (*models.Folder, error)
+	GetFolder(ctx context.Context, id string) (*models.Folder, error)
+	UpdateFolder(ctx context.Context, input dto.UpdateFolderRequest) (*models.Folder, error)
+	DeleteFolder(ctx context.Context, id string) error
+	GetFolders(ctx context.Context, userID string) ([]*models.Folder, error)
+	GetFolderByPath(ctx context.Context, userID string, path string) (*models.Folder, error)
+	MoveFolder(ctx context.Context, folderID string, newParentID string) (*models.Folder, error)
 }
-

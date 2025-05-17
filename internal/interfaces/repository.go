@@ -1,6 +1,10 @@
 package interfaces
 
-import "github.com/DevAntonioJorge/go-notes/internal/models"
+import (
+	"context"
+
+	"github.com/DevAntonioJorge/go-notes/internal/models"
+)
 
 type IUserRepository interface {
 	SaveUser(user *models.User) error
@@ -24,11 +28,11 @@ type INoteRepository interface {
 }
 
 type IFolderRepository interface {
-	SaveFolder(folder *models.Folder) error
-	GetFolder(id string) (*models.Folder, error)
-	UpdateFolder(folder *models.Folder) (*models.Folder, error)
-	DeleteFolder(id string) error
-	GetFolders(userID string) ([]*models.Folder, error)
-	GetFolderByPath(userID string, path string) (*models.Folder, error)
-	MoveFolder(folder *models.Folder, newParentID string) error
+	SaveFolder(ctx context.Context, folder *models.Folder) error
+	GetFolder(ctx context.Context, id string) (*models.Folder, error)
+	UpdateFolder(ctx context.Context, folder *models.Folder) (*models.Folder, error)
+	DeleteFolder(ctx context.Context, id string) error
+	GetFolders(ctx context.Context, userID string) ([]*models.Folder, error)
+	GetFolderByPath(ctx context.Context, userID string, path string) (*models.Folder, error)
+	MoveFolder(ctx context.Context, folder *models.Folder, newParentID string) error
 }

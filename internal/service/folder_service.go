@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+
 	"github.com/DevAntonioJorge/go-notes/internal/dto"
 	"github.com/DevAntonioJorge/go-notes/internal/interfaces"
 	"github.com/DevAntonioJorge/go-notes/internal/models"
@@ -14,51 +16,51 @@ func NewFolderService(repository interfaces.IFolderRepository) *FolderService {
 	return &FolderService{repository}
 }
 
-func (s *FolderService) SaveFolder(input dto.CreateFolderRequest) (*models.Folder, error) {
+func (s *FolderService) SaveFolder(ctx context.Context, input dto.CreateFolderRequest) (*models.Folder, error) {
 	folder, err := models.NewFolder(input.Name, input.ParentID)
 	if err != nil {
 		return nil, err
 	}
-	if err := s.repo.SaveFolder(folder); err != nil {
+	if err := s.repo.SaveFolder(ctx, folder); err != nil {
 		return nil, err
 	}
 	return folder, nil
 }
 
-func (s *FolderService) GetFolder(id string) (*models.Folder, error) {
-	return s.repo.GetFolder(id)
+func (s *FolderService) GetFolder(ctx context.Context, id string) (*models.Folder, error) {
+	return s.repo.GetFolder(ctx, id)
 }
 
-func (s *FolderService) UpdateFolder(input dto.UpdateFolderRequest) (*models.Folder, error) {
-	folder, err := s.repo.GetFolder(input.ID)
+func (s *FolderService) UpdateFolder(ctx context.Context, input dto.UpdateFolderRequest) (*models.Folder, error) {
+	folder, err := s.repo.GetFolder(ctx, input.ID)
 	if err != nil {
 		return nil, err
 	}
-	newFolder, err := s.repo.UpdateFolder(folder)
+	newFolder, err := s.repo.UpdateFolder(ctx, folder)
 	if err != nil {
 		return nil, err
 	}
 	return newFolder, nil
 }
 
-func (s *FolderService) DeleteFolder(id string) error {
-	return s.repo.DeleteFolder(id)
+func (s *FolderService) DeleteFolder(ctx context.Context, id string) error {
+	return s.repo.DeleteFolder(ctx, id)
 }
 
-func (s *FolderService) GetFolders(userID string) ([]*models.Folder, error) {
-	return s.repo.GetFolders(userID)
+func (s *FolderService) GetFolders(ctx context.Context, userID string) ([]*models.Folder, error) {
+	return s.repo.GetFolders(ctx, userID)
 }
 
-func (s *FolderService) GetFolderByPath(userID, path string) (*models.Folder, error) {
-	return s.repo.GetFolderByPath(userID, path)
+func (s *FolderService) GetFolderByPath(ctx context.Context, userID, path string) (*models.Folder, error) {
+	return s.repo.GetFolderByPath(ctx, userID, path)
 }
 
-func (s *FolderService) MoveFolder(folderID, newParentID string) (*models.Folder, error) {
-	folder, err := s.repo.GetFolder(folderID)
+func (s *FolderService) MoveFolder(ctx context.Context, folderID, newParentID string) (*models.Folder, error) {
+	folder, err := s.repo.GetFolder(ctx, folderID)
 	if err != nil {
 		return nil, err
 	}
-	if err := s.repo.MoveFolder(folder, newParentID); err != nil {
+	if err := s.repo.MoveFolder(ctx, folder, newParentID); err != nil {
 		return nil, err
 	}
 	return folder, nil
