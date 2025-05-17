@@ -1,11 +1,12 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/DevAntonioJorge/go-notes/internal/dto"
 	"github.com/DevAntonioJorge/go-notes/internal/interfaces"
-	"github.com/go-playground/validator/v10"
+	"github.com/DevAntonioJorge/go-notes/pkg/schema"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,9 +25,9 @@ func (h *FolderHandler) CreateFolderHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Invalid request body")
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(req); err != nil {
-		return c.String(http.StatusInternalServerError, "Invalid folder name")
+	if err := schema.NewValidator().Validate(&req); err != nil {
+		log.Printf("Error validating the user: %v", err)
+		return c.String(http.StatusInternalServerError, "Error invalid fields")
 	}
 
 	folder, err := h.service.SaveFolder(req)
@@ -56,11 +57,16 @@ func (h *FolderHandler) GetFolderHandler(c echo.Context) error {
 	})
 }
 
-func (h *FolderHandler) UpdateFolder(c echo.Context) error {
+func (h *FolderHandler) UpdateFolderHandler(c echo.Context) error {
 	var req dto.UpdateFolderRequest
 
 	if err := c.Bind(&req); err != nil {
 		return c.String(http.StatusBadRequest, "Ïnvalid request body or invalid id")
+	}
+
+	if err := schema.NewValidator().Validate(&req); err != nil {
+		log.Printf("Error validating the user: %v", err)
+		return c.String(http.StatusInternalServerError, "Error invalid fields")
 	}
 
 	folder, err := h.service.UpdateFolder(req)
@@ -95,6 +101,11 @@ func (h *FolderHandler) GetFoldersHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Invalid user id")
 	}
 
+	if err := schema.NewValidator().Validate(&req); err != nil {
+		log.Printf("Error validating the user: %v", err)
+		return c.String(http.StatusInternalServerError, "Error invalid fields")
+	}
+
 	folderList, err := h.service.GetFolders(req.UserID)
 
 	if err != nil {
@@ -113,6 +124,11 @@ func (h *FolderHandler) GetFolderByPathHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Invalid request body")
 	}
 
+	if err := schema.NewValidator().Validate(&req); err != nil {
+		log.Printf("Error validating the user: %v", err)
+		return c.String(http.StatusInternalServerError, "Error invalid fields")
+	}
+
 	folder, err := h.service.GetFolderByPath(req.UserID, req.Path)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to get folder")
@@ -123,11 +139,16 @@ func (h *FolderHandler) GetFolderByPathHandler(c echo.Context) error {
 	})
 }
 
-func (h *FolderHandler) MoveFolder(c echo.Context) error {
+func (h *FolderHandler) MoveFolderHandler(c echo.Context) error {
 	var req dto.MoveFolderRequest
 
 	if err := c.Bind(&req); err != nil {
 		return c.String(http.StatusBadRequest, "Invalid request body")
+	}
+
+	if err := schema.NewValidator().Validate(&req); err != nil {
+		log.Printf("Error validating the user: %v", err)
+		return c.String(http.StatusInternalServerError, "Error invalid fields")
 	}
 
 	folder, err := h.service.MoveFolder(req.FolderID, req.ParentID)

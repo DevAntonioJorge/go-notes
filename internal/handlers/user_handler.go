@@ -8,7 +8,7 @@ import (
 	"github.com/DevAntonioJorge/go-notes/internal/dto"
 	"github.com/DevAntonioJorge/go-notes/internal/interfaces"
 	"github.com/DevAntonioJorge/go-notes/internal/utils/token"
-	"github.com/go-playground/validator/v10"
+	"github.com/DevAntonioJorge/go-notes/pkg/schema"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
@@ -28,8 +28,7 @@ func (h *UserHandler) RegisterHandler(c echo.Context) error {
 		log.Printf("Error binding json: %v", err)
 		return c.String(http.StatusBadRequest, "Invalid request body")
 	}
-	validate := validator.New()
-	if err := validate.Struct(u); err != nil {
+	if err := schema.NewValidator().Validate(&u); err != nil {
 		log.Printf("Error validating the user: %v", err)
 		return c.String(http.StatusInternalServerError, "Error invalid fields")
 	}
@@ -46,6 +45,10 @@ func (h *UserHandler) LoginHandler(c echo.Context) error {
 	if err := c.Bind(&lr); err != nil {
 		log.Printf("Error binding json: %v", err)
 		return c.String(http.StatusBadRequest, "Invalid request body")
+	}
+	if err := schema.NewValidator().Validate(&lr); err != nil {
+		log.Printf("Error validating the user: %v", err)
+		return c.String(http.StatusInternalServerError, "Error invalid fields")
 	}
 	user, err := h.service.Login(lr)
 	if err != nil {
@@ -69,7 +72,10 @@ func (h *UserHandler) UpdatePasswordHandler(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.String(http.StatusBadGateway, "Invalid request body")
 	}
-
+	if err := schema.NewValidator().Validate(&req); err != nil {
+		log.Printf("Error validating the user: %v", err)
+		return c.String(http.StatusInternalServerError, "Error invalid fields")
+	}
 	user := c.Get("user_id").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	userId := claims["sub"].(string)
