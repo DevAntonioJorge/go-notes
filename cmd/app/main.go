@@ -32,9 +32,11 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := handlers.NewUserHandler(userService)
+
 	folderRepository := repository.NewFolderRepository(mgDB.Database("go-notes"))
 	folderService := service.NewFolderService(folderRepository)
 	folderHandler := handlers.NewFolderHandler(folderService)
+
 	server := api.NewServer(cfg.Port, cfg.JWTSecret, userHandler, folderHandler, logger)
 	server.MapRoutes()
 
