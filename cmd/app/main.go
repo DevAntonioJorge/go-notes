@@ -15,19 +15,18 @@ import (
 )
 
 func main() {
+	logger := logger.New(os.Stdout, "", log.LstdFlags, logger.LevelInfo)
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error loading env: %v", err)
+		logger.Error("Error loading env: %v", err)
 	}
 	cfg := config.GetConfig()
 	db := config.ConnectDB(cfg.DBUrl)
 	mgDB := config.ConnectMongoDB(cfg.MongoDBUrl)
 	defer func() {
 		if err := mgDB.Disconnect(context.Background()); err != nil {
-			log.Fatalf("Error disconnecting to Mongo client")
+			logger.Error("Error disconnecting to Mongo client")
 		}
 	}()
-
-	logger := logger.New(os.Stdout, "", log.LstdFlags, logger.LevelInfo)
 
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
@@ -41,6 +40,6 @@ func main() {
 	server.MapRoutes()
 
 	if err := server.Run(); err != nil {
-		log.Fatalf("Error running server: %v", err)
+		logger.Fatal("Error running server: %v", err)
 	}
 }

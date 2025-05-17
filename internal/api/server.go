@@ -42,19 +42,22 @@ func (s *Server) Run() error {
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		sig := <-quit
 
-		s.logger.Debug("Signal captured: %v", sig.String())
+		s.logger.Info("Signal captured: %v", sig.String())
 
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
+		s.logger.Info("Shutting down server...")
 		shutdown <- s.router.Shutdown(ctx)
 	}()
 
 	err := s.router.Start(s.port)
 	if err != nil {
+		s.logger.Error("Error running server: %v", err)
 		return err
 	}
 
 	if err = <-shutdown; err != nil {
+		s.logger.Error("Error shutting down server: %v", err)
 		return err
 	}
 	return nil

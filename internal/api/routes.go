@@ -21,15 +21,9 @@ func (s *Server) MapRoutes() {
 			AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 			AllowCredentials: true,
 		}),
-		middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-			LogLatency: true,
-			LogStatus:  true,
-			LogError:   true,
-			LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-				s.router.Logger.Debugf("REQUEST: uri=%v, status=%v, latency=%v, error=%v",
-					v.URI, v.Status, v.Latency, v.Error)
-				return nil
-			},
+		middleware.LoggerWithConfig(middleware.LoggerConfig{
+			Skipper: middleware.DefaultSkipper,
+			Format:  `"${time_rfc3339} [${remote_ip}] "${method} ${uri}" ${status} ${latency} ${bytes_in} ${bytes_out}`,
 		}),
 		middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(30)),
 		middleware.RequestID(),
@@ -39,6 +33,7 @@ func (s *Server) MapRoutes() {
 	metrics.Use(echoprometheus.NewMiddleware("api"))
 	metrics.GET("/", echoprometheus.NewHandler())
 	api.GET("/", func(c echo.Context) error {
+		s.logger.Info("Home")
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
@@ -63,19 +58,23 @@ func (s *Server) MapRoutes() {
 		ParseTokenFunc: func(c echo.Context, auth string) (interface{}, error) {
 			token, err := jwt.Parse(auth, func(t *jwt.Token) (interface{}, error) {
 				if t.Method.Alg() != "HS256" {
+					s.logger.Error("Sign method invalid: %v", t.Method.Alg())
 					return nil, echo.NewHTTPError(http.StatusUnauthorized, "Sign method invalid")
 				}
 				return []byte(s.secret), nil
 			})
 			if err != nil {
+				s.logger.Error("Error parsing token: %v", err)
 				return nil, err
 			}
 			if !token.Valid {
+				s.logger.Error("Invalid token")
 				return nil, echo.NewHTTPError(http.StatusUnauthorized, "Invalid Token")
 			}
 			return token, nil
 		},
 		ErrorHandler: func(c echo.Context, err error) error {
+			s.logger.Error("Error parsing token: %v", err)
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or absent token")
 		},
 		/*
