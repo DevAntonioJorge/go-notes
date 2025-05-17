@@ -4,10 +4,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/DevAntonioJorge/go-notes/internal/config"
-	"github.com/DevAntonioJorge/go-notes/internal/infra/dto"
 	"github.com/DevAntonioJorge/go-notes/internal/domain/interfaces"
-	"github.com/DevAntonioJorge/go-notes/internal/utils/token"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/utils/token"
+	"github.com/DevAntonioJorge/go-notes/internal/infra/config"
+	"github.com/DevAntonioJorge/go-notes/internal/infra/dto"
 	"github.com/DevAntonioJorge/go-notes/pkg/schema"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
