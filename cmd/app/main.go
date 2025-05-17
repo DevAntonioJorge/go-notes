@@ -8,20 +8,23 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/DevAntonioJorge/go-notes/internal/api"
+	"github.com/DevAntonioJorge/go-notes/internal/config"
+	"github.com/DevAntonioJorge/go-notes/internal/handlers"
 	"github.com/DevAntonioJorge/go-notes/internal/repository"
 	"github.com/DevAntonioJorge/go-notes/internal/service"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
-func main(){
-	if err := godotenv.Load(); err != nil{
+func main() {
+	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading env: %v", err)
-	} 
+	}
 	e := echo.New()
 
-	cfg := GetConfig()
-    	db := ConnectDB(cfg.DBUrl)
+	cfg := config.GetConfig()
+	db := config.ConnectDB(cfg.DBUrl)
 	//mgDB := ConnectMongoDB(cfg.MongoDBUrl)
 	/*defer func() {
 		if err := mgDB.Disconnect(); err != nil{
@@ -31,20 +34,20 @@ func main(){
 	*/
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
-	userHandler := NewUserHandler(userService)
+	userHandler := handlers.NewUserHandler(userService)
 
-	MapRoutes(e, cfg.JWTSecret, cfg.Port, userHandler)
+	api.MapRoutes(e, cfg.JWTSecret, cfg.Port, userHandler)
 	e.Logger.Fatal(Run(cfg.Port, e))
 }
 
-func Run(port string, e *echo.Echo) error{
+func Run(port string, e *echo.Echo) error {
 
 	shutdown := make(chan error, 1)
 
-	go func(){
+	go func() {
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-		s:= <-quit
+		s := <-quit
 
 		e.Logger.Debugf("Signal captured: %v", s.String())
 
@@ -52,13 +55,13 @@ func Run(port string, e *echo.Echo) error{
 		defer cancel()
 		shutdown <- e.Shutdown(ctx)
 	}()
-	
+
 	err := e.Start(port)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
-	if err = <- shutdown; err != nil {
+	if err = <-shutdown; err != nil {
 		return err
 	}
 	return nil
