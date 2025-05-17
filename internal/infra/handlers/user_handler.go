@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/DevAntonioJorge/go-notes/internal/config"
-	"github.com/DevAntonioJorge/go-notes/internal/dto"
-	"github.com/DevAntonioJorge/go-notes/internal/interfaces"
+	"github.com/DevAntonioJorge/go-notes/internal/infra/dto"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/interfaces"
 	"github.com/DevAntonioJorge/go-notes/internal/utils/token"
 	"github.com/DevAntonioJorge/go-notes/pkg/schema"
 	"github.com/golang-jwt/jwt/v5"

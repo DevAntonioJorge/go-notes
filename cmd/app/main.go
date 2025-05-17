@@ -5,11 +5,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/DevAntonioJorge/go-notes/internal/api"
 	"github.com/DevAntonioJorge/go-notes/internal/config"
-	"github.com/DevAntonioJorge/go-notes/internal/handlers"
-	"github.com/DevAntonioJorge/go-notes/internal/repository"
-	"github.com/DevAntonioJorge/go-notes/internal/service"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/repository"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/service"
+	"github.com/DevAntonioJorge/go-notes/internal/infra/api"
+	"github.com/DevAntonioJorge/go-notes/internal/infra/handlers"
 	"github.com/DevAntonioJorge/go-notes/pkg/logger"
 	"github.com/joho/godotenv"
 )

@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/DevAntonioJorge/go-notes/internal/handlers"
+	"github.com/DevAntonioJorge/go-notes/internal/infra/handlers"
 	"github.com/DevAntonioJorge/go-notes/pkg/logger"
 	"github.com/labstack/echo/v4"
 )

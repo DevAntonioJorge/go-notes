@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/DevAntonioJorge/go-notes/internal/models"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )

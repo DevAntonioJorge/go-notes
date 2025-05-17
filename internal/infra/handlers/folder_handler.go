@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/DevAntonioJorge/go-notes/internal/dto"
-	"github.com/DevAntonioJorge/go-notes/internal/interfaces"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/interfaces"
+	"github.com/DevAntonioJorge/go-notes/internal/infra/dto"
 	"github.com/DevAntonioJorge/go-notes/pkg/schema"
 	"github.com/labstack/echo/v4"
 )

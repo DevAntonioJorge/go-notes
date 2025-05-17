@@ -3,8 +3,8 @@ package interfaces
 import (
 	"context"
 
-	"github.com/DevAntonioJorge/go-notes/internal/dto"
-	"github.com/DevAntonioJorge/go-notes/internal/models"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/models"
+	"github.com/DevAntonioJorge/go-notes/internal/infra/dto"
 )
 
 type IUserService interface {

@@ -3,7 +3,7 @@ package interfaces
 import (
 	"context"
 
-	"github.com/DevAntonioJorge/go-notes/internal/models"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/models"
 )
 
 type IUserRepository interface {
