@@ -1,13 +1,16 @@
 package main
 
 import (
+	"context"
 	"log"
+	"os"
 
 	"github.com/DevAntonioJorge/go-notes/internal/api"
 	"github.com/DevAntonioJorge/go-notes/internal/config"
 	"github.com/DevAntonioJorge/go-notes/internal/handlers"
 	"github.com/DevAntonioJorge/go-notes/internal/repository"
 	"github.com/DevAntonioJorge/go-notes/internal/service"
+	"github.com/DevAntonioJorge/go-notes/pkg/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -17,17 +20,22 @@ func main() {
 	}
 	cfg := config.GetConfig()
 	db := config.ConnectDB(cfg.DBUrl)
-	//mgDB := ConnectMongoDB(cfg.MongoDBUrl)
-	/*defer func() {
-		if err := mgDB.Disconnect(); err != nil{
+	mgDB := config.ConnectMongoDB(cfg.MongoDBUrl)
+	defer func() {
+		if err := mgDB.Disconnect(context.Background()); err != nil {
 			log.Fatalf("Error disconnecting to Mongo client")
 		}
-	}
-	*/
+	}()
+
+	logger := logger.New(os.Stdout, "", log.LstdFlags, logger.LevelInfo)
+
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := handlers.NewUserHandler(userService)
-	server := api.NewServer(cfg.Port, cfg.JWTSecret, userHandler, nil)
+	folderRepository := repository.NewFolderRepository(mgDB.Database("go-notes"))
+	folderService := service.NewFolderService(folderRepository)
+	folderHandler := handlers.NewFolderHandler(folderService)
+	server := api.NewServer(cfg.Port, cfg.JWTSecret, userHandler, folderHandler, logger)
 	server.MapRoutes()
 
 	if err := server.Run(); err != nil {
