@@ -53,11 +53,13 @@ func (s *FolderService) GetFolderByPath(userID, path string) (*models.Folder, er
 	return s.repo.GetFolderByPath(userID, path)
 }
 
-func (s *FolderService) MoveFolder(folderID, newParentID string) error {
+func (s *FolderService) MoveFolder(folderID, newParentID string) (*models.Folder, error) {
 	folder, err := s.repo.GetFolder(folderID)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	return s.repo.MoveFolder(folder, newParentID)
+	if err := s.repo.MoveFolder(folder, newParentID); err != nil {
+		return nil, err
+	}
+	return folder, nil
 }
