@@ -1,0 +1,8 @@
+.env.example
+.git
+*.log
+.gitignore
+.vscode
+Dockerfile
+docker-compose.yaml
+prometheus.yml
