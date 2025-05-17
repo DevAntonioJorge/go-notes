@@ -1,12 +1,7 @@
 package main
 
 import (
-	"context"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
 	"github.com/DevAntonioJorge/go-notes/internal/api"
 	"github.com/DevAntonioJorge/go-notes/internal/config"
@@ -14,15 +9,12 @@ import (
 	"github.com/DevAntonioJorge/go-notes/internal/repository"
 	"github.com/DevAntonioJorge/go-notes/internal/service"
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4"
 )
 
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading env: %v", err)
 	}
-	e := echo.New()
-
 	cfg := config.GetConfig()
 	db := config.ConnectDB(cfg.DBUrl)
 	//mgDB := ConnectMongoDB(cfg.MongoDBUrl)
@@ -35,34 +27,10 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := handlers.NewUserHandler(userService)
+	server := api.NewServer(cfg.Port, cfg.JWTSecret, userHandler, nil)
+	server.MapRoutes()
 
-	api.MapRoutes(e, cfg.JWTSecret, cfg.Port, userHandler)
-	e.Logger.Fatal(Run(cfg.Port, e))
-}
-
-func Run(port string, e *echo.Echo) error {
-
-	shutdown := make(chan error, 1)
-
-	go func() {
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-		s := <-quit
-
-		e.Logger.Debugf("Signal captured: %v", s.String())
-
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
-		shutdown <- e.Shutdown(ctx)
-	}()
-
-	err := e.Start(port)
-	if err != nil {
-		return err
+	if err := server.Run(); err != nil {
+		log.Fatalf("Error running server: %v", err)
 	}
-
-	if err = <-shutdown; err != nil {
-		return err
-	}
-	return nil
 }

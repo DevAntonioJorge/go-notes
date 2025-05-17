@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 
-	"github.com/DevAntonioJorge/go-notes/internal/handlers"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo-contrib/echoprometheus"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -11,13 +10,13 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func MapRoutes(e *echo.Echo, secret string, port string, userHandler *handlers.UserHandler) {
+func (s *Server) MapRoutes() {
 
-	api := e.Group("/api")
+	api := s.router.Group("/api")
 	api.Use(
 		middleware.CORSWithConfig(middleware.CORSConfig{
 			Skipper:          middleware.DefaultSkipper,
-			AllowOrigins:     []string{"http://localhost" + port},
+			AllowOrigins:     []string{"http://localhost" + s.port},
 			AllowMethods:     []string{http.MethodGet, http.MethodPatch, http.MethodDelete, http.MethodPost},
 			AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 			AllowCredentials: true,
@@ -27,7 +26,7 @@ func MapRoutes(e *echo.Echo, secret string, port string, userHandler *handlers.U
 			LogStatus:  true,
 			LogError:   true,
 			LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-				e.Logger.Debugf("REQUEST: uri=%v, status=%v, latency=%v, error=%v",
+				s.router.Logger.Debugf("REQUEST: uri=%v, status=%v, latency=%v, error=%v",
 					v.URI, v.Status, v.Latency, v.Error)
 				return nil
 			},
@@ -47,18 +46,18 @@ func MapRoutes(e *echo.Echo, secret string, port string, userHandler *handlers.U
 
 	public := users.Group("/public")
 	{
-		public.POST("/register", userHandler.RegisterHandler)
-		public.POST("/login", userHandler.LoginHandler)
+		public.POST("/register", s.userHandler.RegisterHandler)
+		public.POST("/login", s.userHandler.LoginHandler)
 	}
 
 	protected := users.Group("/protected")
 	{
-		protected.PATCH("/update-password", userHandler.UpdatePasswordHandler)
+		protected.PATCH("/update-password", s.userHandler.UpdatePasswordHandler)
 	}
 
 	protected.Use(echojwt.WithConfig(echojwt.Config{
 		Skipper:       middleware.DefaultSkipper,
-		SigningKey:    []byte(secret),
+		SigningKey:    []byte(s.secret),
 		SigningMethod: "HS256",
 		ContextKey:    "user_id",
 		ParseTokenFunc: func(c echo.Context, auth string) (interface{}, error) {
@@ -66,7 +65,7 @@ func MapRoutes(e *echo.Echo, secret string, port string, userHandler *handlers.U
 				if t.Method.Alg() != "HS256" {
 					return nil, echo.NewHTTPError(http.StatusUnauthorized, "Sign method invalid")
 				}
-				return []byte(secret), nil
+				return []byte(s.secret), nil
 			})
 			if err != nil {
 				return nil, err
