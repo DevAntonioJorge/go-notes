@@ -3,13 +3,10 @@ services:
     build: .
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
-      - ./.env:/.env  # Montar o arquivo .env no container
-    working_dir: /app
-    command: ["./main"]
-    env_file:
-      - .env  # Usar o arquivo .env para as variáveis de ambiente
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+    depends_on:
+      - db
 
   db:
     image: postgres:17-alpine
