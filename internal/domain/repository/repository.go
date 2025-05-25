@@ -9,7 +9,7 @@ import (
 )
 
 type Repository struct {
-	IUserRepository interface {
+	User interface {
 		SaveUser(user *models.User) error
 		GetUserByEmail(email string) (*models.User, error)
 		GetUserByID(id string) (*models.User, error)
@@ -17,7 +17,7 @@ type Repository struct {
 		UpdatePassword(user *models.User, password string) error
 	}
 
-	INoteRepository interface {
+	Note interface {
 		SaveNote(note *models.Note) error
 		GetNote(id string) (*models.Note, error)
 		UpdateNote(id string, note *models.Note) error
@@ -30,7 +30,7 @@ type Repository struct {
 		GetRecentNotes(userID string, limit int) ([]*models.Note, error)
 	}
 
-	IFolderRepository interface {
+	Folder interface {
 		SaveFolder(ctx context.Context, folder *models.Folder) error
 		GetFolder(ctx context.Context, id string) (*models.Folder, error)
 		UpdateFolder(ctx context.Context, folder *models.Folder) (*models.Folder, error)
@@ -43,8 +43,8 @@ type Repository struct {
 
 func NewRepository(conn *pgx.Conn, client *mongo.Client) *Repository {
 	return &Repository{
-		IUserRepository: NewUserRepository(conn),
-		//INoteRepository:   NewNoteRepository(),
-		IFolderRepository: NewFolderRepository(client.Database("notes")),
+		User: NewUserRepository(conn),
+		//Note: NewNoteRepository(),
+		Folder: NewFolderRepository(client.Database("notes")),
 	}
 }

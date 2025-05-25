@@ -24,7 +24,7 @@ func (s *Server) RegisterHandler(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Error invalid fields")
 	}
 
-	if err := s.service.IUserService.SaveUser(u); err != nil {
+	if err := s.service.User.SaveUser(u); err != nil {
 		log.Printf("Error saving user: %v", err)
 		return c.String(http.StatusBadRequest, "Failed to create user")
 	}
@@ -41,7 +41,7 @@ func (s *Server) LoginHandler(c echo.Context) error {
 		log.Printf("Error validating the user: %v", err)
 		return c.String(http.StatusInternalServerError, "Error invalid fields")
 	}
-	user, err := s.service.IUserService.Login(lr)
+	user, err := s.service.User.Login(lr)
 	if err != nil {
 		log.Printf("Error processing login: %v", err)
 		return c.String(http.StatusUnauthorized, "Invalid credentials")
@@ -70,7 +70,7 @@ func (s *Server) UpdatePasswordHandler(c echo.Context) error {
 	user := c.Get("user_id").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	userId := claims["sub"].(string)
-	if err := s.service.IUserService.UpdatePassword(userId, req.Password); err != nil {
+	if err := s.service.User.UpdatePassword(userId, req.Password); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update password")
 	}
 

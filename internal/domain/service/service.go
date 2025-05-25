@@ -9,13 +9,13 @@ import (
 )
 
 type Service struct {
-	IUserService interface {
+	User interface {
 		SaveUser(input dto.CreateUserRequest) error
 		Login(input dto.LoginRequest) (*models.User, error)
 		UpdatePassword(id, password string) error
 	}
 
-	INoteService interface {
+	Note interface {
 		SaveNote(ctx context.Context, input dto.CreateNoteRequest) (*models.Note, error)
 		GetNote(ctx context.Context, id string) (*models.Note, error)
 		UpdateNote(ctx context.Context, id string, input dto.UpdateNoteRequest) error
@@ -28,7 +28,7 @@ type Service struct {
 		GetRecentNotes(ctx context.Context, userID string, limit int) ([]*models.Note, error)
 	}
 
-	IFolderService interface {
+	Folder interface {
 		SaveFolder(ctx context.Context, input dto.CreateFolderRequest) (*models.Folder, error)
 		GetFolder(ctx context.Context, id string) (*models.Folder, error)
 		UpdateFolder(ctx context.Context, input dto.UpdateFolderRequest) (*models.Folder, error)
@@ -42,7 +42,7 @@ type Service struct {
 func NewService(repository *repository.Repository) *Service {
 
 	return &Service{
-		IUserService:   NewUserService(repository),
-		IFolderService: NewFolderService(repository),
+		User:   NewUserService(repository),
+		Folder: NewFolderService(repository),
 	}
 }
