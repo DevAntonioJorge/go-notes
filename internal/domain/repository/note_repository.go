@@ -33,8 +33,30 @@ func (r *NoteRepository) GetNote(ctx context.Context, id string) (*models.Note, 
 	}
 	return note, nil
 }
-func (r *NoteRepository) UpdateNote(ctx context.Context, id string, note *models.Note) error {
-	_, err := r.db.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": note})
+func (r *NoteRepository) UpdateNoteTitle(ctx context.Context, id string, title string) error {
+	_, err := r.db.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"title": title}})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *NoteRepository) UpdateNoteContent(ctx context.Context, id string, content string) error {
+	_, err := r.db.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"content": content}})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (r *NoteRepository) UpdateNoteTags(ctx context.Context, id string, tags []string) error {
+	_, err := r.db.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"tags": tags}})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (r *NoteRepository) UpdateNoteFolder(ctx context.Context, id string, folderID string) error {
+	_, err := r.db.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"folder_id": folderID}})
 	if err != nil {
 		return err
 	}

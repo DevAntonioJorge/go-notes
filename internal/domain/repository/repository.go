@@ -20,7 +20,10 @@ type Repository struct {
 	Note interface {
 		SaveNote(ctx context.Context, note *models.Note) error
 		GetNote(ctx context.Context, id string) (*models.Note, error)
-		UpdateNote(ctx context.Context, id string, note *models.Note) error
+		UpdateNoteTitle(ctx context.Context, id string, title string) error
+		UpdateNoteContent(ctx context.Context, id string, content string) error
+		UpdateNoteTags(ctx context.Context, id string, tags []string) error
+		UpdateNoteFolder(ctx context.Context, id string, folderID string) error
 		DeleteNote(ctx context.Context, id string) error
 		GetNotes(ctx context.Context, userID string) ([]*models.Note, error)
 		SearchNotes(ctx context.Context, userID string, query string) ([]*models.Note, error)

@@ -18,7 +18,10 @@ type Service struct {
 	Note interface {
 		SaveNote(ctx context.Context, input dto.CreateNoteRequest) (*models.Note, error)
 		GetNote(ctx context.Context, id string) (*models.Note, error)
-		UpdateNote(ctx context.Context, id string, input dto.UpdateNoteRequest) error
+		UpdateNoteTitle(ctx context.Context, id string, input dto.UpdateNoteTitleRequest) error
+		UpdateNoteContent(ctx context.Context, id string, input dto.UpdateNoteContentRequest) error
+		UpdateNoteTags(ctx context.Context, id string, input dto.UpdateNoteTagsRequest) error
+		UpdateNoteFolder(ctx context.Context, id string, input dto.UpdateNoteFolderRequest) error
 		DeleteNote(ctx context.Context, id string) error
 		GetNotes(ctx context.Context, userID string) ([]*models.Note, error)
 		SearchNotes(ctx context.Context, userID string, query string) ([]*models.Note, error)
@@ -43,6 +46,7 @@ func NewService(repository *repository.Repository) *Service {
 
 	return &Service{
 		User:   NewUserService(repository),
+		Note:   NewNoteService(repository),
 		Folder: NewFolderService(repository),
 	}
 }
