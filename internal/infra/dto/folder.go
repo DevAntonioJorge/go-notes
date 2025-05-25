@@ -1,8 +1,8 @@
 package dto
 
 type CreateFolderRequest struct {
-	Name     string  `json:"name" validate:"min=4,max=10"`
-	ParentID *string `json:"parent_id" validate:"required"`
+	Name     string `json:"name" validate:"min=4,max=10"`
+	ParentID string `json:"parent_id" validate:"required"`
 }
 type UpdateFolderRequest struct {
 	ID   string `param:"id" validate:"required"`
