@@ -18,16 +18,16 @@ type Repository struct {
 	}
 
 	Note interface {
-		SaveNote(note *models.Note) error
-		GetNote(id string) (*models.Note, error)
-		UpdateNote(id string, note *models.Note) error
-		DeleteNote(id string) error
-		GetNotes(userID string) ([]*models.Note, error)
-		SearchNotes(userID string, query string) ([]*models.Note, error)
-		GetNotesByFolder(folderID string) ([]*models.Note, error)
-		MoveNote(noteID string, newFolderID string) error
-		GetNotesByTag(userID string, tag string) ([]*models.Note, error)
-		GetRecentNotes(userID string, limit int) ([]*models.Note, error)
+		SaveNote(ctx context.Context, note *models.Note) error
+		GetNote(ctx context.Context, id string) (*models.Note, error)
+		UpdateNote(ctx context.Context, id string, note *models.Note) error
+		DeleteNote(ctx context.Context, id string) error
+		GetNotes(ctx context.Context, userID string) ([]*models.Note, error)
+		SearchNotes(ctx context.Context, userID string, query string) ([]*models.Note, error)
+		GetNotesByFolder(ctx context.Context, folderID string) ([]*models.Note, error)
+		MoveNote(ctx context.Context, noteID string, newFolderID string) error
+		GetNotesByTag(ctx context.Context, userID string, tag string) ([]*models.Note, error)
+		GetRecentNotes(ctx context.Context, userID string, limit int) ([]*models.Note, error)
 	}
 
 	Folder interface {
