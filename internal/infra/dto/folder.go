@@ -23,7 +23,7 @@ type GetFoldersRequest struct {
 
 type GetFolderByPathRequest struct {
 	UserID string `json:"user_id" validate:"required"`
-	Path   string `json:"path" validate:"required"`
+	Path   string `query:"path" validate:"required"`
 }
 
 type MoveFolderRequest struct {
