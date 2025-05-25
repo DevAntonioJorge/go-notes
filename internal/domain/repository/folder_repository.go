@@ -9,15 +9,15 @@ import (
 )
 
 type FolderRepository struct {
-	db *mongo.Database
+	db *mongo.Collection
 }
 
-func NewFolderRepository(db *mongo.Database) *FolderRepository {
+func NewFolderRepository(db *mongo.Collection) *FolderRepository {
 	return &FolderRepository{db}
 }
 
 func (r *FolderRepository) SaveFolder(ctx context.Context, folder *models.Folder) error {
-	_, err := r.db.Collection("folders").InsertOne(ctx, folder)
+	_, err := r.db.InsertOne(ctx, folder)
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func (r *FolderRepository) SaveFolder(ctx context.Context, folder *models.Folder
 
 func (r *FolderRepository) GetFolder(ctx context.Context, id string) (*models.Folder, error) {
 	folder := new(models.Folder)
-	err := r.db.Collection("folders").FindOne(ctx, bson.M{"_id": id}).Decode(folder)
+	err := r.db.FindOne(ctx, bson.M{"_id": id}).Decode(folder)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (r *FolderRepository) GetFolder(ctx context.Context, id string) (*models.Fo
 }
 
 func (r *FolderRepository) UpdateFolder(ctx context.Context, folder *models.Folder) (*models.Folder, error) {
-	_, err := r.db.Collection("folders").UpdateOne(ctx, bson.M{"_id": folder.ID}, bson.M{"$set": folder})
+	_, err := r.db.UpdateOne(ctx, bson.M{"_id": folder.ID}, bson.M{"$set": folder})
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (r *FolderRepository) UpdateFolder(ctx context.Context, folder *models.Fold
 }
 
 func (r *FolderRepository) DeleteFolder(ctx context.Context, id string) error {
-	_, err := r.db.Collection("folders").DeleteOne(ctx, bson.M{"_id": id})
+	_, err := r.db.DeleteOne(ctx, bson.M{"_id": id})
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (r *FolderRepository) DeleteFolder(ctx context.Context, id string) error {
 }
 
 func (r *FolderRepository) GetFolders(ctx context.Context, userID string) ([]*models.Folder, error) {
-	cursor, err := r.db.Collection("folders").Find(ctx, bson.M{"user_id": userID})
+	cursor, err := r.db.Find(ctx, bson.M{"user_id": userID})
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (r *FolderRepository) GetFolders(ctx context.Context, userID string) ([]*mo
 
 func (r *FolderRepository) GetFolderByPath(ctx context.Context, userID string, path string) (*models.Folder, error) {
 	folder := new(models.Folder)
-	err := r.db.Collection("folders").FindOne(ctx, bson.M{"user_id": userID, "path": path}).Decode(folder)
+	err := r.db.FindOne(ctx, bson.M{"user_id": userID, "path": path}).Decode(folder)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (r *FolderRepository) GetFolderByPath(ctx context.Context, userID string, p
 }
 
 func (r *FolderRepository) MoveFolder(ctx context.Context, folder *models.Folder, newParentID string) error {
-	_, err := r.db.Collection("folders").UpdateOne(ctx, bson.M{"_id": folder.ID}, bson.M{"$set": bson.M{"parent_id": newParentID}})
+	_, err := r.db.UpdateOne(ctx, bson.M{"_id": folder.ID}, bson.M{"$set": bson.M{"parent_id": newParentID}})
 	if err != nil {
 		return err
 	}

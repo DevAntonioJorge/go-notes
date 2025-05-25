@@ -43,8 +43,8 @@ type Repository struct {
 
 func NewRepository(conn *pgx.Conn, client *mongo.Client) *Repository {
 	return &Repository{
-		User: NewUserRepository(conn),
-		//Note: NewNoteRepository(),
-		Folder: NewFolderRepository(client.Database("notes")),
+		User:   NewUserRepository(conn),
+		Note:   NewNoteRepository(client.Database("notes").Collection("notes")),
+		Folder: NewFolderRepository(client.Database("notes").Collection("folders")),
 	}
 }
