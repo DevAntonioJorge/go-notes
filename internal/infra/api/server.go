@@ -7,29 +7,26 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/DevAntonioJorge/go-notes/internal/infra/handlers"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/service"
 	"github.com/DevAntonioJorge/go-notes/pkg/logger"
 	"github.com/labstack/echo/v4"
 )
 
 type Server struct {
-	router        *echo.Echo
-	port          string
-	secret        string
-	logger        *logger.Logger
-	userHandler   *handlers.UserHandler
-	folderHandler *handlers.FolderHandler
-	//noteHandler *handlers.NoteHandler
+	router  *echo.Echo
+	port    string
+	secret  string
+	logger  *logger.Logger
+	service *service.Service
 }
 
-func NewServer(port string, secret string, userHandler *handlers.UserHandler, folderHandler *handlers.FolderHandler, logger *logger.Logger) *Server {
+func NewServer(port string, secret string, logger *logger.Logger, service *service.Service) *Server {
 	return &Server{
-		router:        echo.New(),
-		port:          port,
-		secret:        secret,
-		logger:        logger,
-		userHandler:   userHandler,
-		folderHandler: folderHandler,
+		router:  echo.New(),
+		port:    port,
+		secret:  secret,
+		logger:  logger,
+		service: service,
 	}
 }
 

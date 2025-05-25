@@ -9,7 +9,6 @@ import (
 	"github.com/DevAntonioJorge/go-notes/internal/domain/service"
 	"github.com/DevAntonioJorge/go-notes/internal/infra/api"
 	"github.com/DevAntonioJorge/go-notes/internal/infra/config"
-	"github.com/DevAntonioJorge/go-notes/internal/infra/handlers"
 	"github.com/DevAntonioJorge/go-notes/pkg/logger"
 	"github.com/joho/godotenv"
 )
@@ -30,15 +29,10 @@ func main() {
 		}
 	}()
 	logger.Info("MongoDB connected")
-	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
-	userHandler := handlers.NewUserHandler(userService)
 
-	folderRepository := repository.NewFolderRepository(mgDB.Database("go-notes"))
-	folderService := service.NewFolderService(folderRepository)
-	folderHandler := handlers.NewFolderHandler(folderService)
-
-	server := api.NewServer(cfg.Port, cfg.JWTSecret, userHandler, folderHandler, logger)
+	repository := repository.NewRepository(db, mgDB)
+	service := service.NewService(repository)
+	server := api.NewServer(cfg.Port, cfg.JWTSecret, logger, service)
 	server.MapRoutes()
 
 	if err := server.Run(); err != nil {

@@ -41,13 +41,13 @@ func (s *Server) MapRoutes() {
 
 	public := users.Group("/public")
 	{
-		public.POST("/register", s.userHandler.RegisterHandler)
-		public.POST("/login", s.userHandler.LoginHandler)
+		public.POST("/register", s.RegisterHandler)
+		public.POST("/login", s.LoginHandler)
 	}
 
 	protected := users.Group("/protected")
 	{
-		protected.PATCH("/update-password", s.userHandler.UpdatePasswordHandler)
+		protected.PATCH("/update-password", s.UpdatePasswordHandler)
 	}
 
 	protected.Use(echojwt.WithConfig(echojwt.Config{

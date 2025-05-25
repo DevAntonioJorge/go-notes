@@ -3,25 +3,27 @@ package service
 import (
 	"strings"
 
-	"github.com/DevAntonioJorge/go-notes/internal/domain/interfaces"
 	"github.com/DevAntonioJorge/go-notes/internal/domain/models"
+	"github.com/DevAntonioJorge/go-notes/internal/domain/repository"
 	"github.com/DevAntonioJorge/go-notes/internal/infra/dto"
 )
 
 type UserService struct {
-	repo interfaces.IUserRepository
+	repo *repository.Repository
 }
 
-func NewUserService(repository interfaces.IUserRepository) interfaces.IUserService {
-	return &UserService{repository}
+func NewUserService(repo *repository.Repository) *UserService {
+	return &UserService{
+		repo: repo,
+	}
 }
 func (s *UserService) SaveUser(u dto.CreateUserRequest) error {
-	_, err := s.repo.GetUserByEmail(u.Email)
+	_, err := s.repo.IUserRepository.GetUserByEmail(u.Email)
 	if err == nil {
 		return models.ErrEmailExists
 	}
 	user := models.NewUser(u.Name, u.Email, u.Password)
-	if err = s.repo.SaveUser(user); err != nil {
+	if err = s.repo.IUserRepository.SaveUser(user); err != nil {
 		return err
 	}
 	return nil
@@ -31,9 +33,9 @@ func (s *UserService) Login(input dto.LoginRequest) (*models.User, error) {
 	var err error
 
 	if strings.Contains(input.Identifier, "@") {
-		user, err = s.repo.GetUserByEmail(input.Identifier)
+		user, err = s.repo.IUserRepository.GetUserByEmail(input.Identifier)
 	} else {
-		user, err = s.repo.GetUserByName(input.Identifier)
+		user, err = s.repo.IUserRepository.GetUserByName(input.Identifier)
 	}
 
 	if user == nil || err != nil {
@@ -49,11 +51,11 @@ func (s *UserService) Login(input dto.LoginRequest) (*models.User, error) {
 
 func (s *UserService) UpdatePassword(id, password string) error {
 
-	user, err := s.repo.GetUserByID(id)
+	user, err := s.repo.IUserRepository.GetUserByID(id)
 	if err != nil {
 		return models.ErrUserNotFound
 	}
-	if err := s.repo.UpdatePassword(user, password); err != nil {
+	if err := s.repo.IUserRepository.UpdatePassword(user, password); err != nil {
 		return models.ErrUpdatePassword
 	}
 

@@ -1,4 +1,4 @@
-package handlers
+package api
 
 import (
 	"context"
@@ -6,21 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/DevAntonioJorge/go-notes/internal/domain/interfaces"
 	"github.com/DevAntonioJorge/go-notes/internal/infra/dto"
 	"github.com/DevAntonioJorge/go-notes/pkg/schema"
 	"github.com/labstack/echo/v4"
 )
 
-type FolderHandler struct {
-	service interfaces.IFolderService
-}
-
-func NewFolderHandler(service interfaces.IFolderService) *FolderHandler {
-	return &FolderHandler{service}
-}
-
-func (h *FolderHandler) CreateFolderHandler(c echo.Context) error {
+func (s *Server) CreateFolderHandler(c echo.Context) error {
 	var req dto.CreateFolderRequest
 
 	if err := c.Bind(&req); err != nil {
@@ -32,7 +23,7 @@ func (h *FolderHandler) CreateFolderHandler(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Error invalid fields")
 	}
 
-	folder, err := h.service.SaveFolder(c.Request().Context(), req)
+	folder, err := s.service.IFolderService.SaveFolder(c.Request().Context(), req)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to save folder")
 	}
@@ -43,14 +34,14 @@ func (h *FolderHandler) CreateFolderHandler(c echo.Context) error {
 	})
 }
 
-func (h *FolderHandler) GetFolderHandler(c echo.Context) error {
+func (s *Server) GetFolderHandler(c echo.Context) error {
 	var req dto.GetFolderRequest
 	if err := c.Bind(&req); err != nil {
 		return c.String(http.StatusBadRequest, "No id specified or invalid parameter")
 	}
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
 	defer cancel()
-	folder, err := h.service.GetFolder(ctx, req.ID)
+	folder, err := s.service.IFolderService.GetFolder(ctx, req.ID)
 	if err != nil {
 		return c.String(http.StatusNotFound, "Folder not found")
 	}
@@ -60,7 +51,7 @@ func (h *FolderHandler) GetFolderHandler(c echo.Context) error {
 	})
 }
 
-func (h *FolderHandler) UpdateFolderHandler(c echo.Context) error {
+func (s *Server) UpdateFolderHandler(c echo.Context) error {
 	var req dto.UpdateFolderRequest
 
 	if err := c.Bind(&req); err != nil {
@@ -73,7 +64,7 @@ func (h *FolderHandler) UpdateFolderHandler(c echo.Context) error {
 	}
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
 	defer cancel()
-	folder, err := h.service.UpdateFolder(ctx, req)
+	folder, err := s.service.IFolderService.UpdateFolder(ctx, req)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to update folder name")
 	}
@@ -84,7 +75,7 @@ func (h *FolderHandler) UpdateFolderHandler(c echo.Context) error {
 	})
 }
 
-func (h *FolderHandler) DeleteFolderHandler(c echo.Context) error {
+func (s *Server) DeleteFolderHandler(c echo.Context) error {
 	var req dto.DeleteFolderRequest
 
 	if err := c.Bind(&req); err != nil {
@@ -93,14 +84,14 @@ func (h *FolderHandler) DeleteFolderHandler(c echo.Context) error {
 
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
 	defer cancel()
-	if err := h.service.DeleteFolder(ctx, req.ID); err != nil {
+	if err := s.service.IFolderService.DeleteFolder(ctx, req.ID); err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to delete folder")
 	}
 
 	return c.String(http.StatusAccepted, "Folder deleted")
 
 }
-func (h *FolderHandler) GetFoldersHandler(c echo.Context) error {
+func (s *Server) GetFoldersHandler(c echo.Context) error {
 	var req dto.GetFoldersRequest
 
 	if err := c.Bind(&req); err != nil {
@@ -114,7 +105,7 @@ func (h *FolderHandler) GetFoldersHandler(c echo.Context) error {
 
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
 	defer cancel()
-	folderList, err := h.service.GetFolders(ctx, req.UserID)
+	folderList, err := s.service.IFolderService.GetFolders(ctx, req.UserID)
 
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to get folders")
@@ -125,7 +116,7 @@ func (h *FolderHandler) GetFoldersHandler(c echo.Context) error {
 	})
 }
 
-func (h *FolderHandler) GetFolderByPathHandler(c echo.Context) error {
+func (s *Server) GetFolderByPathHandler(c echo.Context) error {
 	var req dto.GetFolderByPathRequest
 
 	if err := c.Bind(&req); err != nil {
@@ -139,7 +130,7 @@ func (h *FolderHandler) GetFolderByPathHandler(c echo.Context) error {
 
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
 	defer cancel()
-	folder, err := h.service.GetFolderByPath(ctx, req.UserID, req.Path)
+	folder, err := s.service.IFolderService.GetFolderByPath(ctx, req.UserID, req.Path)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to get folder")
 	}
@@ -149,7 +140,7 @@ func (h *FolderHandler) GetFolderByPathHandler(c echo.Context) error {
 	})
 }
 
-func (h *FolderHandler) MoveFolderHandler(c echo.Context) error {
+func (s *Server) MoveServer(c echo.Context) error {
 	var req dto.MoveFolderRequest
 
 	if err := c.Bind(&req); err != nil {
@@ -163,7 +154,7 @@ func (h *FolderHandler) MoveFolderHandler(c echo.Context) error {
 
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
 	defer cancel()
-	folder, err := h.service.MoveFolder(ctx, req.FolderID, req.ParentID)
+	folder, err := s.service.IFolderService.MoveFolder(ctx, req.FolderID, req.ParentID)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to move folder")
 	}
