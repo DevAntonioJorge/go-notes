@@ -15,4 +15,5 @@ var (
 	ErrInvalidPath            = errors.New("invalid path")
 	ErrInvalidFolderPath      = errors.New("invalid folder path")
 	ErrCannotDeleteRootFolder = errors.New("cannot delete root folder")
+	ErrRequiredField          = errors.New("required field is missing")
 )

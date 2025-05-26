@@ -1,7 +1,6 @@
 package models
 
 import (
-	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,7 +15,7 @@ type Folder struct {
 
 func NewFolder(name string, parentID string) (*Folder, error) {
 	if name == "" {
-		return nil, errors.New("name is required")
+		return nil, ErrRequiredField
 	}
 	return &Folder{
 		ID:        uuid.NewString(),
